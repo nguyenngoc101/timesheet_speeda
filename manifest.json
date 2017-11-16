@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+
+  "name": "TimeShit",
+  "description": "This extension allows the user to get timesheet in wsm framgia system",
+  "version": "2.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://wsm.framgia.vn/*"],
+      "js": ["jquery-3.2.1.min.js", "getPagesSource.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background":
+    {
+        "scripts": ["jquery-3.2.1.min.js"]
+    }
+}
