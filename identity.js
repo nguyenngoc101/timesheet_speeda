@@ -13,20 +13,15 @@ var timeshitLoader = (function() {
         console.log("token: "+token);
 
         var url="https://sheets.googleapis.com/v4/spreadsheets/1TY_EK3ezfAuZwklVTGLmCakt6EhwO8IkioWHhUaHu7I/values/Nguyen%20Van%20Ngoc!D4%3AD9?includeValuesInResponse=true&responseDateTimeRenderOption=FORMATTED_STRING&responseValueRenderOption=FORMATTED_VALUE&valueInputOption=USER_ENTERED";
-        var data = [
-      {
-        range: "Nguyen%20Van%20Ngoc!D4%3AD9",
-        majorDimension: "ROWS",
-        values: ["10:58","10:58","10:58","10:58"]
-      }
-    ];
+        var data = {"range":"Nguyen Van Ngoc!D4:D9","majorDimension":"ROWS","values":[["19:55"],["19:55"],["19:55"],["19:55"],["19:59"],["19:59"]]};
         $.ajax({
             url: url,
-            type: 'PUT',
-            data: data,
+            type: 'put',
+            data: JSON.stringify(data),
             dataType: 'json',
             beforeSend: function(request) {
                 request.setRequestHeader("Authorization", 'Bearer ' + token);
+                request.setRequestHeader('Content-Type','application/json');
           },
             success: function(result) {
               console.log("OK");
@@ -35,7 +30,7 @@ var timeshitLoader = (function() {
             error: function (err) {
                 console.log(err.responseText);
             }
-});
+        });
 
 
       });
