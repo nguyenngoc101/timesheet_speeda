@@ -17,7 +17,7 @@ var timeshitLoader = (function() {
         $.ajax({
             url: url,
             type: 'put',
-            data: JSON.stringify(data),
+            data: JSON.stringify(data.serialize()),
             dataType: 'json',
             beforeSend: function(request) {
                 request.setRequestHeader("Authorization", 'Bearer ' + token);
