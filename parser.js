@@ -5,6 +5,8 @@
 // timesheet cell json format: {"2017-11-20" : ["19:50", "19:50"]}
 
 var parser = (function () {
+    let WSM_FRAMGFIA_URL = "https://wsm.framgia.vn/vi/dashboard/user_timesheets";
+
     function parse(document) {
         let dailyTimeMap = new Map();
         let days = $(document).find(".curr tr td").not(".nil");
@@ -31,16 +33,33 @@ var parser = (function () {
         };
     }
     // Month format: YYYYMM
-    function getMonthlyTimeSheet(month) {
-        let currentMonthTimesheet = getCurrentMonthTimeSheet(month);
-        let nextMonthTimesheet = getCurrentMonthTimeSheet(month);
-        return merge(currentMonthTimesheet, nextMonthTimesheet);
+    function getMonthlyTimeSheet(month, callback) {
+        let currentMonthTimesheet = getCurrentMonthTimeSheet(month, function (err, currentMonthTimesheet) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            console.log("currentMonthTimesheet: "+JSON.stringify(currentMonthTimesheet));
+            let nextMonth = getNextMonth(month);
+            getCurrentMonthTimeSheet(nextMonth, function (err, nextMonthTimesheet) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+                console.log("nextMonthTimesheet: "+JSON.stringify(nextMonthTimesheet));
+                let timesheet = merge(currentMonthTimesheet, nextMonthTimesheet);
+                callback(null, timesheet);
+            });
+
+        });
     }
 
     function getCurrentMonthTimeSheet(month, callback){
         let timesheetUrl = getTimesheetUrl(month);
-        $.get(timesheetUrl).done(function(data) {
-            callback(null, data);
+        $.get(timesheetUrl).done(function(document) {
+            let timesheet = parse(document);
+            console.log("timsheet: "+JSON.stringify(timesheet));
+            callback(null, timesheet);
         }).fail(function (err) {
             callback(err);
             return;
@@ -50,17 +69,32 @@ var parser = (function () {
 
     function merge(currentMonthTimesheet, nextMonthTimesheet) {
         // TODO
+        return null;
     }
 
     function getTimesheetUrl(month) {
-        let year = month/100;
+        let year = parseInt(month/100);
         let currentMonth = month % 100;
-        return "https://wsm.framgia.vn/vi/dashboard/user_timesheets?year="+year+"&month="+currentMonth;
+
+        return WSM_FRAMGFIA_URL + "?year="+year+"&month="+currentMonth;
+    }
+
+    // yyyyMM
+    function getNextMonth(month) {
+        let year = parseInt(month/100);
+        let currentMonth = month % 100;
+        if (currentMonth == 12) {
+            year++;
+            currentMonth = 1;
+        } else {
+            currentMonth++;
+        }
+        return year * 100 + currentMonth;
+
     }
 
     return {
-        parse: parse,
-        getCurrentMonthTimeSheet: getCurrentMonthTimeSheet
+        getMonthlyTimeSheet: getMonthlyTimeSheet
     }
 })();
 

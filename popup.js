@@ -36,7 +36,9 @@ $(document).ready(function () {
     });
 
     $("#export").click(function () {
-        let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get("201711");//"Nguyen Van Ngoc!D4:D9";
+        let selectedMonth = "201711";
+
+        let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth);
         let data = {
             "range": range,
             "majorDimension":"ROWS",
