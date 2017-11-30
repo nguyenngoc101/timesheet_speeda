@@ -7,10 +7,10 @@ var apiOptions = {
     sheetId: "1TY_EK3ezfAuZwklVTGLmCakt6EhwO8IkioWHhUaHu7I"
 };
 
-var emailNameMap = {
-    "trada110@gmail.com" : "Nguyen Van Ngoc",
-    "dohalong1993@gmail.com" : "Do Ha Long"
-};
+var emailNameMap = new Map([
+    ["trada110@gmail.com", "Nguyen Van Ngoc"],
+    ["dohalong1993@gmail.com", "Do Ha Long"]]
+);
 
 var api = api(apiOptions);
 
@@ -36,11 +36,11 @@ $(document).ready(function () {
     });
 
     $("#export").click(function () {
-        let range = emailNameMap.get(getCurrentEmail())+"!";//"Nguyen Van Ngoc!D4:D9";
+        let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get("201711");//"Nguyen Van Ngoc!D4:D9";
         let data = {
             "range": range,
             "majorDimension":"ROWS",
-            "values":[["20:50"],["20:50"],["20:50"],["20:50"],["20:50"],["20:50"]]
+            "values":[["20:50"],["20:50"],["20:50"],[""],["20:50"],["20:50"]]
         };
         api.update(range, data)
             .done(function(data) {
