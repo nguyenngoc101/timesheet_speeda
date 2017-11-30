@@ -1,0 +1,55 @@
+body {
+    height: 500px;
+    width: 400px;
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: url("day_001.jpg") l 500px center;
+}
+
+.header-bounder{
+    background-color: #5cb85c;
+    color: #fff;
+    height: 80px;
+    border-bottom: 2px solid white;
+}
+/*#286090*/
+
+.h1-custom{
+    margin: 0;
+    line-height: 80px;
+}
+
+.sign-in-panel{
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #e6e6e6;
+}
+
+#signin, #export{
+    border-radius: 0;
+    padding: 0;
+}
+
+.sign-in-text{
+    padding: 5px;
+    font-weight: 100;
+}
+
+#month-select{
+    width: 30%;
+    margin: 0 auto;
+    height: 28px;
+    border-radius: 0;
+    font-size: 12px;
+}
+
+.export-text{
+    padding: 11px;
+    font-weight: 100;
+}
+
+footer {
+    position: fixed;
+    height: 20px;
+    bottom: 0;
+    width: 100%;
+}

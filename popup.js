@@ -16,7 +16,13 @@ var api = api(apiOptions);
 
 var currentEmail;
 
+var dateNow = new Date();
+
 $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
+    generateOptionMonth();
+
     $("#signin").click(function () {
         auth.getToken(function(err, token) {
             if (err) {
@@ -31,11 +37,12 @@ $(document).ready(function () {
                 setCurrentEmail(email);
             });
             disableSignInBtn();
-            enableExportBtn();
         })
     });
 
     $("#export").click(function () {
+        $("#export").prop("disabled", true);
+        $(".export-text").text("Processing Shit...");
         let selectedMonth = "201711";
 
         let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth);
@@ -47,19 +54,22 @@ $(document).ready(function () {
         api.update(range, data)
             .done(function(data) {
                 console.log(data);
+                $(".export-text").text("Shit processed!").delay(3000).queue(function () {
+                    $(this).text("Export Timeshit").prop("disabled", false);
+                });
             })
             .fail(function (err) {
                 console.log("Err: "+JSON.stringify(err));
             });
-    })
+    });
 });
 
 function disableSignInBtn() {
-    $("#signin").hide();
+    $("#signin").fadeOut(300,enableExportBtn(300));
 }
 
 function enableExportBtn() {
-    $("#export").show();
+    $(".export-panel").fadeIn();
 }
 
 function setCurrentEmail(email) {
@@ -68,4 +78,26 @@ function setCurrentEmail(email) {
 
 function getCurrentEmail() {
     return this.currentEmail;
+}
+
+function generateOptionMonth() {
+    let year = dateNow.getFullYear();
+    let month = dateNow.getMonth()+1;
+    let lastYear = year - 1;
+    for(let i = month; i >= 0; i--){
+        if(i === 0 && year !== lastYear){
+            i = 12;
+            year = lastYear;
+        }
+        if(year === lastYear && i < month) {
+            break;
+        }
+        $('#month-select').append(appendMonthSelect(year,i));
+    }
+}
+
+function appendMonthSelect(year, month){
+    let monthYear = year+
+        ((''+month).length<2 ? '0' : '') + month;
+    return "<option value='"+monthYear+"'>"+monthYear+"</option>";
 }
