@@ -12,8 +12,23 @@ var auth = (function() {
       });
     }
 
+    //cookie.domain == "wsm.framgia.vn"
+    //cookie.name == "_wsm_02_session"
+    function getCookie(domain, name, callback) {
+        chrome.cookies.getAll({}, function(cookies) {
+                cookies.forEach(function (cookie) {
+                    if (cookie.domain == domain && cookie.name == name) {
+                       callback(cookie)
+                       return;
+                    };
+                });
+            callback(null);
+        });
+    }
+
     // export module
     return {
-        getToken: getToken
+        getToken: getToken,
+        getCookie: getCookie
     }
 })();

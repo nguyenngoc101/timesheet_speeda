@@ -19,18 +19,6 @@ $(document).ready(function () {
             apiOptions.accessToken = token;
             disableSignInBtn();
             enableExportBtn();
-            chrome.cookies.getAll({}, function(cookies) {
-                cookies.forEach(function (cookie) {
-                    if (cookie.name == "_wsm_02_session") {
-                        console.log("_wsm_02_session: "+cookie.value);
-                        $.get('https://wsm.framgia.vn/vi/dashboard/user_timesheets?year=2017&month=11', function (data) {
-                            console.log(data);
-                        });
-                    };
-                });
-            });
-            
-
         })
     });
 

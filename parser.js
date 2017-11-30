@@ -6,7 +6,7 @@
 var parser = (function () {
     function parse(document) {
         let dailyTimeMap = new Map();
-        let days = $(document).find(".curr tr td").not(".nil, .saturday-sunday, holiday-color");
+        let days = $(document).find(".curr tr td").not(".nil");
         $(days.each(function(i, obj) {
 
             let dailyTime = parserDailyTimeSheet(obj);
@@ -24,7 +24,7 @@ var parser = (function () {
         let timeIn = $(dailyTimeSheet).find(".event-time-in").html();
         let timeOut = $(dailyTimeSheet).find(".event-time-out").html();
         day = day.replace("today", "").trim();
-        return {"day": day, "timeInOut": {timeIn, timeOut}};
+        return {[day]: {timeIn, timeOut}};
     }
 
     return {
