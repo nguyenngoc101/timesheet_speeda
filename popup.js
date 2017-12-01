@@ -16,12 +16,10 @@ var api = api(apiOptions);
 
 var currentEmail;
 
-var dateNow = new Date();
-
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 
-    generateOptionMonth();
+    generateMonthOptionTag();
 
     $("#signin").click(function () {
         auth.getToken(function(err, token) {
@@ -80,24 +78,29 @@ function getCurrentEmail() {
     return this.currentEmail;
 }
 
-function generateOptionMonth() {
-    let year = dateNow.getFullYear();
-    let month = dateNow.getMonth()+1;
-    let lastYear = year - 1;
-    for(let i = month; i >= 0; i--){
-        if(i === 0 && year !== lastYear){
-            i = 12;
-            year = lastYear;
-        }
-        if(year === lastYear && i < month) {
-            break;
-        }
-        $('#month-select').append(appendMonthSelect(year,i));
-    }
+
+function generateMonthOptionTag() {
+    generateOptionsMonth().forEach(monthYear => {
+        $('#month-select').append("<option value='"+monthYear+"'>"+monthYear+"</option>");
+    });
 }
 
-function appendMonthSelect(year, month){
-    let monthYear = year+
-        ((''+month).length<2 ? '0' : '') + month;
-    return "<option value='"+monthYear+"'>"+monthYear+"</option>";
+function generateOptionsMonth() {
+    let dateNow = new Date();
+    let year = dateNow.getFullYear();
+    let month = dateNow.getMonth()+1;
+    let options = [];
+    for (let i = 1; i<=13; i++) {
+        options.push(convertMonthOptionToString(year, month));
+        month = month - 1;
+        if (month === 0) {
+            year--;
+            month = 12;
+        }
+    }
+    return options;
+}
+
+function convertMonthOptionToString(year, month){
+    return year + ((''+month).length<2 ? '0' : '') + month;
 }
