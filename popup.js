@@ -39,26 +39,29 @@ $(document).ready(function () {
     });
 
     $("#export").click(function () {
-        $("#export").prop("disabled", true);
-        $(".export-text").text("Processing Shit...");
-        let selectedMonth = "201711";
+        let selectedMonth = $('#month-select :selected').text();
+        parser.getMonthlyTimeSheet(parseInt(selectedMonth), function (err, timeoutData) {
+            if (err) {
+                alert("Can not get data from Framgia WSM!")
+            } else {
+                let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth);
+                let data = {
+                    "range": range,
+                    "majorDimension":"ROWS",
+                    "values": timeoutData,
+                };
+                api.update(range, data)
+                    .done(function(data) {
+                        alert(JSON.stringify(data));
+                    })
+                    .fail(function (err) {
+                        lert("Can not write data to spreadsheet!")
+                    });
+                    }
 
-        let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth);
-        let data = {
-            "range": range,
-            "majorDimension":"ROWS",
-            "values":[["20:50"],["20:50"],["20:50"],[""],["20:50"],["20:50"]]
-        };
-        api.update(range, data)
-            .done(function(data) {
-                console.log(data);
-                $(".export-text").text("Shit processed!").delay(3000).queue(function () {
-                    $(this).text("Export Timeshit").prop("disabled", false);
-                });
-            })
-            .fail(function (err) {
-                console.log("Err: "+JSON.stringify(err));
-            });
+
+        });
+
     });
 });
 
@@ -104,3 +107,4 @@ function generateOptionsMonth() {
 function convertMonthOptionToString(year, month){
     return year + ((''+month).length<2 ? '0' : '') + month;
 }
+

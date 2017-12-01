@@ -5,71 +5,101 @@
 // timesheet cell json format: {"2017-11-20" : ["19:50", "19:50"]}
 
 var parser = (function () {
+
     let WSM_FRAMGFIA_URL = "https://wsm.framgia.vn/vi/dashboard/user_timesheets";
 
-    function parse(document) {
-        let dailyTimeMap = new Map();
-        let days = $(document).find(".curr tr td").not(".nil");
-        $(days.each(function(i, obj) {
-            let dailyTime = parserDailyTimeSheet(obj);
-            dailyTimeMap.set(dailyTime.day, dailyTime.timeSheet);
-        }));
-
-        // console.log(dailyTimeMap.size);
-        // dailyTimeMap.forEach(function(value, key) {
-        //   console.log(key + ' = ' + JSON.stringify(value));
-        // });
-        return dailyTimeMap;
-    }
-
-
-    function parserDailyTimeSheet(dailyTimeSheet) {
-        let day = $(dailyTimeSheet).attr("class");
-        let timeIn = $(dailyTimeSheet).find(".event-time-in").html();
-        let timeOut = $(dailyTimeSheet).find(".event-time-out").html();
-        day = day.replace("today", "").trim();
-        return {
-            [day] : {timeIn, timeOut}
-        };
-    }
     // Month format: YYYYMM
     function getMonthlyTimeSheet(month, callback) {
-        let currentMonthTimesheet = getCurrentMonthTimeSheet(month, function (err, currentMonthTimesheet) {
-            if (err) {
-                callback(err);
-                return;
-            }
-            console.log("currentMonthTimesheet: "+JSON.stringify(currentMonthTimesheet));
-            let nextMonth = getNextMonth(month);
-            getCurrentMonthTimeSheet(nextMonth, function (err, nextMonthTimesheet) {
-                if (err) {
+        getCurrentMonthTimeSheet(month)
+                .done(function (jsonMonthData) {
+                    let timesheet = parseTimeSheet(jsonMonthData["content"]["usertimesheets"]["timesheets"]);
+                    let nextMonth = getNextMonth(month);
+                    getCurrentMonthTimeSheet(nextMonth)
+                        .done(function (jsonNextMonthData) {
+                            let nextMonthTimesheet = parseTimeSheet(jsonNextMonthData["content"]["usertimesheets"]["timesheets"]);
+                            callback(null, getTimeout(merge(month, timesheet, nextMonthTimesheet)));
+                        })
+                        .fail(function (err) {
+                            callback(err);
+                        })
+                })
+                .fail(function (err) {
                     callback(err);
-                    return;
-                }
-                console.log("nextMonthTimesheet: "+JSON.stringify(nextMonthTimesheet));
-                let timesheet = merge(currentMonthTimesheet, nextMonthTimesheet);
-                callback(null, timesheet);
-            });
-
-        });
+                });
+            ;
     }
 
-    function getCurrentMonthTimeSheet(month, callback){
+    function parseTimeSheet(rawTimesheet) {
+        let monthlyTimesheet = {};
+        let dateTimeSheet;
+        let timeIn;
+        let timeOut;
+        for (let [key, value] of Object.entries(rawTimesheet)) {
+            dateTimeSheet = rawTimesheet[key];
+            if (dateTimeSheet.hasOwnProperty("time_sheet_date")) {
+                timeIn = extractTime(dateTimeSheet["time_sheet_date"]["time_in"]);
+                timeOut = extractTime(dateTimeSheet["time_sheet_date"]["time_out"]);
+            } else {
+                timeIn = "";
+                timeOut = "";
+            }
+            monthlyTimesheet[key] = {timeIn, timeOut};
+        }
+
+        return monthlyTimesheet;
+    }
+
+    function extractTime(rawtime) {
+        return rawtime.replace(/.*T(\d\d:\d\d).*/, "$1");
+    }
+
+    function getCurrentMonthTimeSheet(month){
         let timesheetUrl = getTimesheetUrl(month);
-        $.get(timesheetUrl).done(function(document) {
-            let timesheet = parse(document);
-            console.log("timsheet: "+JSON.stringify(timesheet));
-            callback(null, timesheet);
-        }).fail(function (err) {
-            callback(err);
-            return;
+        console.log("timesheetURL: "+timesheetUrl);
+        return $.ajax({
+            url: timesheetUrl,
+            type: 'get',
+            crossDomain: true,
+            dataType: 'json',
+            beforeSend: function(request) {
+                request.setRequestHeader('Content-Type','application/json');
+                request.setRequestHeader("Accept","application/json");
+            }
         });
 
     }
 
-    function merge(currentMonthTimesheet, nextMonthTimesheet) {
-        // TODO
-        return null;
+    function merge(month, currentMonthTimesheet, nextMonthTimesheet) {
+        let year = parseInt(month/100);
+        let currentMonth = month % 100;
+        let minDay = year + "-" + currentMonth + "-01";
+        let maxDay = year + "-" + currentMonth + "-31";
+
+        let mergedTimesheet = Object.assign(currentMonthTimesheet, nextMonthTimesheet);
+        let filteredTimesheet = {};
+
+        for (let [key, value] of Object.entries(mergedTimesheet)) {
+            if ( key >= minDay && key <= maxDay) {
+                filteredTimesheet[key] = mergedTimesheet[key];
+            }
+        }
+
+        let orderedMergedTimesheet = {};
+        Object.keys(filteredTimesheet).sort().forEach(function(key) {
+          orderedMergedTimesheet[key] = filteredTimesheet[key];
+        });
+
+
+        return orderedMergedTimesheet;
+    }
+
+    function getTimeout(timesheet) {
+        let timeout = [];
+        for (let [key, value] of Object.entries(timesheet)) {
+            timeout.push([value["timeOut"]])
+        }
+
+        return timeout;
     }
 
     function getTimesheetUrl(month) {
@@ -97,7 +127,3 @@ var parser = (function () {
         getMonthlyTimeSheet: getMonthlyTimeSheet
     }
 })();
-
-
-
-
