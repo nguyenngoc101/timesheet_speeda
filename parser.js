@@ -50,7 +50,7 @@ var parser = (function () {
     }
 
     function extractTime(rawtime) {
-        return rawtime.replace(/.*T(\d\d:\d\d).*/, "$1");
+        return rawtime ? rawtime.replace(/.*T(\d\d:\d\d).*/, "$1") : "";
     }
 
     function getCurrentMonthTimeSheet(month){

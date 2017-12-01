@@ -46,6 +46,12 @@ body {
     font-weight: 100;
 }
 
+.message-panel {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 0;
+}
+
 footer {
     position: fixed;
     height: 20px;
