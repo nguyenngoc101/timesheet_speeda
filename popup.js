@@ -24,13 +24,13 @@ $(document).ready(function () {
     $("#signin").click(function () {
         auth.getToken(function(err, token) {
             if (err) {
-                console.log("Can't get token from your ID");
+                alert("Can't get token from your ID");
             }
 
             apiOptions.accessToken = token;
             auth.getEmail(function (err, email) {
                 if (err) {
-                    console.log("Can't get token from your ID");
+                    alert("Can't get token from your ID");
                 }
                 setCurrentEmail(email);
             });
