@@ -54,7 +54,7 @@ $(document).ready(function () {
                 };
                 api.update(range, data)
                     .done(function(data) {
-                        alert(JSON.stringify(data));
+                        alert("Write sucessful, please check the timesheet");
                     })
                     .fail(function (err) {
                         lert("Can not write data to spreadsheet!")
