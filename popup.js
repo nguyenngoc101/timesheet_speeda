@@ -9,7 +9,9 @@ var apiOptions = {
 
 var emailNameMap = new Map([
     ["trada110@gmail.com", "Nguyen Van Ngoc"],
-    ["dohalong1993@gmail.com", "Do Ha Long"]]
+    ["dohalong1993@gmail.com", "Do Ha Long"],
+    ["mksaikat123@gmail.com", "Karim Md Muzahidul"]
+    ]
 );
 
 var api = api(apiOptions);
