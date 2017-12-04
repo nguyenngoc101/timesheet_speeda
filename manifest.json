@@ -1,8 +1,12 @@
 {
   "manifest_version": 2,
   "name": "TimeShit",
+  "icons":
+  {
+    "48": "icon.png"
+  },
   "description": "This extension allows the user to get timesheet in wsm framgia system",
-  "version": "2.0",
+  "version": "1.0",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp5Q0AvqjxAaWW2ZvXAnYogfFtNqJWSxqcv6jmj3cdNh/f3Dfiim8xuSmraB6o36N1SfUdoUj87zaMgvPHs5M4ljneIuDfnhMiDQhtvSv//yfDGyGWichoPKY8n3/Z/4LxJKZMcMW9LUzJITM+qBEu0WdbY47r9tCWQUh61OWTJkGHcZM610HN6MwaIf1JM1zXLBrUXE+7f9WtxaqrDGQoUcFxjF+920/qkIafGsPON6QwdmgPQPBBlIgTQz7yUhhENOQ4WYC6AsKqSY/gNe7HD4tPkAZfaXkKufi4IUILNg+n0gBzrwIg4p9pk3+Mft4P1mXoK9lYyTZdp2rdIn2aQIDAQAB",
   "permissions": [
     "cookies",
