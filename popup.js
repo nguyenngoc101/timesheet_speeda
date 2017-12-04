@@ -68,7 +68,7 @@ $(document).ready(function () {
             if (err) {
                 displayErrMessage("Can not get data from Framgia WSM! Please make sure you logged in");
             } else {
-                let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth);
+                let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth.substring(4, 6));
                 let data = {
                     "range": range,
                     "majorDimension":"ROWS",
