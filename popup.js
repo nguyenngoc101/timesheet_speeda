@@ -33,8 +33,11 @@ var emailNameMap = new Map([["tannv85@gmail.com", "Nguyen Van Tan"],
 var api = api(apiOptions);
 
 var currentEmail;
+var isSignedIn;
 
 var TIMESHEET_SHORT_URL = "https://goo.gl/4CVhaX";
+
+setSignedInWSM();
 
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
@@ -106,6 +109,13 @@ function generateMonthOptionTag() {
         $('#month-select').append("<option value='"+monthYear+"'>"+monthYear+"</option>");
     });
 }
+
+function setSignedInWSM() {
+    auth.getCookie("wsm.framgia.vn", "_wsm_02_session", function(cookie) {
+        isSignedIn = !cookie ? false : true
+    });
+}
+
 
 
 function generateOptionsMonth() {
