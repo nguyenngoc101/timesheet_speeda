@@ -62,6 +62,9 @@ var parser = (function () {
             crossDomain: true,
             dataType: 'json',
             beforeSend: function(request) {
+                $(".loader").fadeIn();
+                $("#export").prop("disabled", true);
+                $(".export-text").text("Processing...");
                 request.setRequestHeader('Content-Type','application/json');
                 request.setRequestHeader("Accept","application/json");
             }

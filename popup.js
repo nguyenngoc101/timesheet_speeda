@@ -35,7 +35,7 @@ var api = api(apiOptions);
 var currentEmail;
 var isSignedIn;
 
-var TIMESHEET_SHORT_URL = "https://goo.gl/4CVhaX";
+var TIMESHEET_SHORT_BASE_URL = "https://docs.google.com/spreadsheets/d/";
 
 setSignedInWSM();
 
@@ -62,10 +62,11 @@ $(document).ready(function () {
     });
 
     $("#export").click(function () {
+        hideMessagePanel();
         let selectedMonth = $('#month-select :selected').text();
         parser.getMonthlyTimeSheet(parseInt(selectedMonth), function (err, timeoutData) {
             if (err) {
-                displayErrMessage("Can not get data from Framgia WSM!");
+                displayErrMessage("Can not get data from Framgia WSM! Please make sure you logged in");
             } else {
                 let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth);
                 let data = {
@@ -75,9 +76,15 @@ $(document).ready(function () {
                 };
                 api.update(range, data)
                     .done(function(data) {
-                        displaySuccessMessage("Please check the timesheet here:", TIMESHEET_SHORT_URL);
+                        $(".loader").fadeOut();
+                        $("#export").prop("disabled", false);
+                        $(".export-text").text("Export Timeshit");
+                        displaySuccessMessage("Please check the timesheet:", apiOptions.sheetId);
                     })
                     .fail(function (err) {
+                        $(".loader").fadeOut();
+                        $("#export").prop("disabled", false);
+                        $(".export-text").text("Export Timeshit");
                         displayErrMessage("Can not write data to spreadsheet!");
                     });
                 }
@@ -87,9 +94,8 @@ $(document).ready(function () {
 
     });
 });
-
 function disableSignInBtn() {
-    $("#signin").fadeOut(300,enableExportBtn(300));
+    $("#signin").fadeOut(300,enableExportBtn());
 }
 
 function enableExportBtn() {
@@ -116,8 +122,6 @@ function setSignedInWSM() {
     });
 }
 
-
-
 function generateOptionsMonth() {
     let dateNow = new Date();
     let year = dateNow.getFullYear();
@@ -134,15 +138,27 @@ function generateOptionsMonth() {
     return options;
 }
 
+
 function convertMonthOptionToString(year, month){
     return year + ((''+month).length<2 ? '0' : '') + month;
 }
 
 function displayErrMessage(msg) {
-    $(".message-panel").addClass(".alert-danger").append("<strong>Error!</strong> "+msg+".").fadeIn();
+    $(".message-panel").addClass("alert-danger").append("<strong>Error!</strong> <span>"+msg+".</span>")
+        .fadeIn('slow');
 }
 
-function displaySuccessMessage(msg, url) {
+function displaySuccessMessage(msg, sheetId) {
     $(".message-panel").addClass("alert-success")
-        .append("<strong>Success!</strong> "+msg+"<strong> <a href='"+url+"' target='_blank'>"+url+"</a></strong>").fadeIn();
+        .append("<strong>Success!</strong> <span>"+msg+"</span><strong> <a href='"+getSheetPage(sheetId)+"' target='_blank'>HERE</a></strong>")
+            .fadeIn();
 }
+
+function getSheetPage(sheetId) {
+    return TIMESHEET_SHORT_BASE_URL+sheetId;
+}
+
+let hideMessagePanel = function () {
+    $(".message-panel").children().remove();
+    $(".message-panel").slideUp('fast');
+};
