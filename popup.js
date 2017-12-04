@@ -33,18 +33,16 @@ var emailNameMap = new Map([["tannv85@gmail.com", "Nguyen Van Tan"],
 var api = api(apiOptions);
 
 var currentEmail;
-var isSignedIn;
-
 var TIMESHEET_SHORT_BASE_URL = "https://docs.google.com/spreadsheets/d/";
 
-setSignedInWSM();
+var isSignedIn;
 
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
-
     generateMonthOptionTag();
 
     $("#signin").click(function () {
+        setSignedInWSM();
         auth.getToken(function(err, token) {
             if (err) {
                 displayErrMessage("Can't get token from your ID");
@@ -58,10 +56,12 @@ $(document).ready(function () {
                 setCurrentEmail(email);
             });
             disableSignInBtn();
+
         })
     });
 
     $("#export").click(function () {
+        $("#export").prop("disabled", false);
         hideMessagePanel();
         let selectedMonth = $('#month-select :selected').text();
         parser.getMonthlyTimeSheet(parseInt(selectedMonth), function (err, timeoutData) {
@@ -71,11 +71,11 @@ $(document).ready(function () {
                 let range = emailNameMap.get(getCurrentEmail()) + "!" + timesheetUtils.getColumnDateMap().get(selectedMonth.substring(4, 6));
                 let data = {
                     "range": range,
-                    "majorDimension":"ROWS",
+                    "majorDimension": "ROWS",
                     "values": timeoutData,
                 };
                 api.update(range, data)
-                    .done(function(data) {
+                    .done(function (data) {
                         $(".loader").fadeOut();
                         $("#export").prop("disabled", false);
                         $(".export-text").text("Export Timeshit");
@@ -87,12 +87,11 @@ $(document).ready(function () {
                         $(".export-text").text("Export Timeshit");
                         displayErrMessage("Can not write data to spreadsheet!");
                     });
-                }
+            }
 
-
-        });
-
+        })
     });
+
 });
 function disableSignInBtn() {
     $("#signin").fadeOut(300,enableExportBtn());
@@ -100,6 +99,22 @@ function disableSignInBtn() {
 
 function enableExportBtn() {
     $(".export-panel").fadeIn();
+    if(isSignedIn) {
+        $("#export").prop("disabled", false);
+        $('#month-select').prop("disabled", false);
+    } else {
+        $("#export").prop("disabled", true);
+        $('#month-select').prop("disabled", true);
+        displayWarningMessage("Please sign in to WSM first!");
+    }
+
+}
+
+function setSignedInWSM() {
+    auth.getCookie("wsm.framgia.vn", "_wsm_02_session", function(cookie) {
+        console.log("cookie hehe: "+JSON.stringify(cookie))
+        isSignedIn = cookie;
+    });
 }
 
 function setCurrentEmail(email) {
@@ -113,12 +128,6 @@ function getCurrentEmail() {
 function generateMonthOptionTag() {
     generateOptionsMonth().forEach(monthYear => {
         $('#month-select').append("<option value='"+monthYear+"'>"+monthYear+"</option>");
-    });
-}
-
-function setSignedInWSM() {
-    auth.getCookie("wsm.framgia.vn", "_wsm_02_session", function(cookie) {
-        isSignedIn = !cookie ? false : true
     });
 }
 
@@ -152,6 +161,11 @@ function displaySuccessMessage(msg, sheetId) {
     $(".message-panel").addClass("alert-success")
         .append("<strong>Success!</strong> <span>"+msg+"</span><strong> <a href='"+getSheetPage(sheetId)+"' target='_blank'>HERE</a></strong>")
             .fadeIn();
+}
+
+function displayWarningMessage(msg) {
+    $(".message-panel").addClass("alert-warning").append("<strong>Warning!</strong> <span>"+msg+".</span>")
+        .fadeIn('slow');
 }
 
 function getSheetPage(sheetId) {

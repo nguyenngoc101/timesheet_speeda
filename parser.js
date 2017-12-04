@@ -26,7 +26,6 @@ var parser = (function () {
                 .fail(function (err) {
                     callback(err);
                 });
-            ;
     }
 
     function parseTimeSheet(rawTimesheet) {

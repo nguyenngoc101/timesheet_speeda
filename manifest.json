@@ -13,14 +13,6 @@
     "https://www.googleapis.com/*"
   ],
 
-  "content_scripts": [
-    {
-      "matches": ["https://wsm.framgia.vn/*"],
-      "js": ["parser.js"],
-      "run_at": "document_end"
-    }
-  ],
-
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"
