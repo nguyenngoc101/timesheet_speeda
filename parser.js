@@ -73,7 +73,7 @@ var parser = (function () {
 
     function merge(month, currentMonthTimesheet, nextMonthTimesheet) {
         let year = parseInt(month/100);
-        let currentMonth = month % 100;
+        let currentMonth = month.toString().substring(4);
         let minDay = year + "-" + currentMonth + "-01";
         let maxDay = year + "-" + currentMonth + "-31";
 
